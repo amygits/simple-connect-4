@@ -1,3 +1,3 @@
 # Simple Connect 4 (W/ tests)
 
-Source code for basic Connect 4 with tests project I did for a class.
+The (Java) code should launch a Connect 4 GUI that allows a user to engage in a game with a computer player over a server.  Computer player will make random movements with no intention of beating the player.  Test classes are included.
