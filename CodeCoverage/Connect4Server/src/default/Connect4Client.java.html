@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4Client.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4Client.java</span></div><h1>Connect4Client.java</h1><pre class="source lang-java linenums">import java.io.*;
+import java.lang.management.PlatformLoggingMXBean;
+import java.net.*;
+import javafx.application.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.css.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import javafx.stage.*; 
+import java.util.Date;
+import java.util.Scanner;
+
+/*
+** This class contains a local client for the Connect 4 game GUI
+*  It will prompt the user for preferred UI and launches the GUI 
+*  And opens a socket connection to local server at port 8001
+* 
+* @author Amy Ma
+* @version 1.0
+*/
+
+
+<span class="nc" id="L33">public class Connect4Client extends Application implements Connect4Constants {</span>
+	
+	/** Grid and Stage variables **/
+<span class="nc" id="L36">	private Cell[][] cell = new Cell[6][7];</span>
+	private int row, col;
+	private BorderPane bPane;
+	private GridPane pane;
+<span class="nc" id="L40">	private Label lblStatus = new Label();</span>
+<span class="nc" id="L41">	private Label lblTitle = new Label();</span>
+	Scene scene;
+
+	/** 'X'/'O' holders */
+	private char currentToken;
+	private char otherToken;
+
+	/** Socket/connection symbols */
+<span class="nc" id="L49">	public String host = &quot;localhost&quot;;</span>
+	private DataInputStream fromServer;
+	private DataOutputStream toServer;
+
+	/** Game turn indicators */
+<span class="nc" id="L54">	private boolean myTurn = false;</span>
+<span class="nc" id="L55">	private boolean continueToPlay = true;</span>
+
+	/** Holders for receiving player and client status from server*/
+	private int player;
+	private int status;
+
+	/** Starts the program */
+	public void start(Stage clientStage)
+	{
+		/** Creates the window that asks user for type of vs. game */
+<span class="nc" id="L65">		pane = new GridPane();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		for (int i = 0; i &lt; 6; i++)</span>
+		{
+<span class="nc bnc" id="L68" title="All 2 branches missed.">			for (int j = 0; j &lt; 7; j++)</span>
+			{
+<span class="nc" id="L70">				pane.add(cell[i][j] = new Cell(), j, i);</span>
+			}
+		}
+
+<span class="nc" id="L74">		bPane = new BorderPane();</span>
+<span class="nc" id="L75">		bPane.setCenter(pane); </span>
+<span class="nc" id="L76">		bPane.setTop(lblTitle);</span>
+<span class="nc" id="L77">		bPane.setBottom(lblStatus);</span>
+<span class="nc" id="L78">		scene = new Scene(bPane, 410, 405);</span>
+<span class="nc" id="L79">		clientStage.setTitle(&quot;Connect 4&quot;); </span>
+<span class="nc" id="L80">		clientStage.setScene(scene);</span>
+<span class="nc" id="L81">		clientStage.show();</span>
+
+<span class="nc" id="L83">		Stage firstStage = new Stage();</span>
+<span class="nc" id="L84">		Text gameOptions = new Text(&quot;Choose who you're playing against:&quot;);</span>
+
+<span class="nc" id="L86">		ToggleGroup stg1Grp = new ToggleGroup();</span>
+<span class="nc" id="L87">		RadioButton option1 = new RadioButton(&quot;Player&quot;);</span>
+<span class="nc" id="L88">		option1.setToggleGroup(stg1Grp);</span>
+<span class="nc" id="L89">		option1.setUserData('P');</span>
+<span class="nc" id="L90">		option1.setSelected(true);</span>
+<span class="nc" id="L91">		RadioButton option2 = new RadioButton(&quot;Computer&quot;);</span>
+<span class="nc" id="L92">		option2.setUserData('C');</span>
+<span class="nc" id="L93">		option2.setToggleGroup(stg1Grp);</span>
+
+<span class="nc" id="L95">		Button okButton = new Button(&quot;OK&quot;);</span>
+<span class="nc" id="L96">		okButton.setOnAction(e -&gt; gameSelect(firstStage, stg1Grp));</span>
+
+
+<span class="nc" id="L99">		HBox hBox = new HBox(20);</span>
+<span class="nc" id="L100">		hBox.getChildren().add(option1);</span>
+<span class="nc" id="L101">		hBox.getChildren().add(option2);</span>
+
+<span class="nc" id="L103">		VBox vBox = new VBox(25);</span>
+<span class="nc" id="L104">		vBox.getChildren().addAll(gameOptions, hBox, okButton);</span>
+
+<span class="nc" id="L106">		Scene aScene = new Scene(vBox, 305, 125);</span>
+<span class="nc" id="L107">		firstStage.setTitle(&quot;Connect 4 Start&quot;);</span>
+<span class="nc" id="L108">		firstStage.setScene(aScene);</span>
+<span class="nc" id="L109">		firstStage.show();</span>
+<span class="nc" id="L110">	}</span>
+	
+	/**
+	 * Action method for the versus game window
+	 * @param s s should be current stage so it will close on action
+	 * @param t Pulls data from ToggleGroup
+	 */
+	public void gameSelect(Stage s, ToggleGroup t)
+	{
+<span class="nc" id="L119">		s.close();</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		if (t.getSelectedToggle().getUserData().equals('P'))</span>
+		{
+<span class="nc" id="L123">			connectToServerPVP();</span>
+		}
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">		if (t.getSelectedToggle().getUserData().equals('C'))</span>
+		{
+<span class="nc" id="L128">			connectToServerComp();</span>
+		}
+
+<span class="nc" id="L131">	}</span>
+
+	/**
+	 * Connects to server and alerts the server to start a computer game
+	 */
+	public void connectToServerComp() {
+
+		try 
+		{
+<span class="nc" id="L140">			Socket socket = new Socket(host, 8001);</span>
+<span class="nc" id="L141">			fromServer = new DataInputStream(socket.getInputStream());</span>
+<span class="nc" id="L142">			toServer = new DataOutputStream(socket.getOutputStream());</span>
+
+<span class="nc" id="L144">			toServer.writeInt(vsCOMPUTER);</span>
+
+<span class="nc" id="L146">		} catch (IOException ex)</span>
+		{
+<span class="nc" id="L148">			ex.printStackTrace();</span>
+		}
+
+<span class="nc" id="L151">		Thread thread = new Thread(new clientHandlingComputer(fromServer, toServer));</span>
+<span class="nc" id="L152">		thread.start();</span>
+
+<span class="nc" id="L154">	}</span>
+	/**
+	 * Connects to server and alerts the server to start a PVP game
+	 */
+	public void connectToServerPVP() {
+
+		try 
+		{
+<span class="nc" id="L162">			Socket socket = new Socket(host, 8001);</span>
+<span class="nc" id="L163">			fromServer = new DataInputStream(socket.getInputStream());</span>
+<span class="nc" id="L164">			toServer = new DataOutputStream(socket.getOutputStream());</span>
+
+<span class="nc" id="L166">			toServer.writeInt(vsPLAYER);</span>
+
+<span class="nc" id="L168">		} catch (IOException ex)</span>
+		{
+<span class="nc" id="L170">			ex.printStackTrace();</span>
+		}
+
+<span class="nc" id="L173">		Thread thread = new Thread(new clientHandlingPlayer(fromServer, toServer));</span>
+<span class="nc" id="L174">		thread.start();</span>
+<span class="nc" id="L175">	}</span>
+
+	/**
+	 * Receives info from server 
+	 * Updates client status and game GUI 
+	 * Called only during versus player option
+	 * @throws IOException
+	 */
+	public void receiveInfoFromServer() throws IOException
+	{
+<span class="nc" id="L185">		status = fromServer.readInt();</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">		if (status == PLAYER1WINS)</span>
+		{	
+<span class="nc bnc" id="L189" title="All 2 branches missed.">			if (player == PLAYER1) </span>
+<span class="nc" id="L190">			{ 	setMove(currentToken);</span>
+<span class="nc" id="L191">			Platform.runLater(() -&gt; lblStatus.setText(&quot;You've won!&quot;)); </span>
+<span class="nc" id="L192">			} </span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">			else if (player == PLAYER2) { </span>
+<span class="nc" id="L194">				setMove(otherToken);</span>
+<span class="nc" id="L195">				Platform.runLater(() -&gt; lblStatus.setText(&quot;Game over - Player X has won!&quot;));</span>
+			}
+
+<span class="nc" id="L198">			continueToPlay = false;</span>
+<span class="nc" id="L199">		}</span>
+
+<span class="nc bnc" id="L201" title="All 2 branches missed.">		else if (status == PLAYER2WINS)</span>
+		{
+
+<span class="nc bnc" id="L204" title="All 2 branches missed.">			if (player == PLAYER2) </span>
+			{ 
+<span class="nc" id="L206">				Platform.runLater(() -&gt; lblStatus.setText(&quot;You've won!&quot;)); </span>
+<span class="nc" id="L207">				setMove(currentToken);</span>
+
+<span class="nc" id="L209">			}</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">			else if (player == PLAYER1) { </span>
+<span class="nc" id="L211">				setMove(otherToken);</span>
+<span class="nc" id="L212">				Platform.runLater(() -&gt; lblStatus.setText(&quot;Game over - Player O has won!&quot;)); </span>
+			}
+<span class="nc" id="L214">			continueToPlay = false;</span>
+<span class="nc" id="L215">		}</span>
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">		else if (status == DRAW)</span>
+		{
+
+<span class="nc" id="L220">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Game over - It's a tie!&quot;));</span>
+<span class="nc" id="L221">			setMove(otherToken);</span>
+<span class="nc" id="L222">			continueToPlay = false;</span>
+
+<span class="nc" id="L224">		}</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">		else if (status == WAIT)</span>
+		{
+
+<span class="nc" id="L228">			setMove(currentToken);</span>
+<span class="nc" id="L229">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Other player's turn.&quot;));</span>
+<span class="nc" id="L230">			myTurn = false; </span>
+
+<span class="nc" id="L232">		}</span>
+
+<span class="nc bnc" id="L234" title="All 2 branches missed.">		else if (status == CONTINUE)</span>
+		{
+<span class="nc" id="L236">			setMove(otherToken);</span>
+<span class="nc" id="L237">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Your turn.&quot;));</span>
+<span class="nc" id="L238">			myTurn = true;</span>
+		}
+<span class="nc" id="L240">	}</span>
+
+	/**
+	 * Receives info from server 
+	 * Updates client status and game GUI 
+	 * Called only during versus computer option
+	 * @throws IOException
+	 */
+	public void receiveInfoFromServerC() throws IOException
+	{
+<span class="nc" id="L250">		status = fromServer.readInt();</span>
+
+<span class="nc bnc" id="L252" title="All 2 branches missed.">		if (status == PLAYER1WINS)</span>
+		{	
+<span class="nc" id="L254">			setMove(currentToken);</span>
+<span class="nc" id="L255">			Platform.runLater(() -&gt; lblStatus.setText(&quot;You've won!&quot;)); </span>
+<span class="nc" id="L256">			continueToPlay = false;</span>
+<span class="nc" id="L257">		}</span>
+
+<span class="nc bnc" id="L259" title="All 2 branches missed.">		else if (status == PLAYER2WINS)</span>
+		{
+<span class="nc" id="L261">			setMove(otherToken);</span>
+<span class="nc" id="L262">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Game over - Player O has won!&quot;));</span>
+<span class="nc" id="L263">			continueToPlay = false;</span>
+<span class="nc" id="L264">		}</span>
+
+<span class="nc bnc" id="L266" title="All 2 branches missed.">		else if (status == DRAW)</span>
+		{
+<span class="nc" id="L268">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Game over - It's a tie!&quot;));</span>
+<span class="nc" id="L269">			setMove(otherToken);</span>
+<span class="nc" id="L270">			continueToPlay = false;</span>
+<span class="nc" id="L271">		}</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">		else if (status == WAIT)</span>
+		{
+<span class="nc" id="L274">			setMove(currentToken);</span>
+<span class="nc" id="L275">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Other player's turn.&quot;));</span>
+<span class="nc" id="L276">			myTurn = false; </span>
+<span class="nc" id="L277">		}</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">		else if (status == CONTINUE)</span>
+		{
+<span class="nc" id="L280">			setMove(otherToken);</span>
+<span class="nc" id="L281">			Platform.runLater(() -&gt; lblStatus.setText(&quot;Your turn.&quot;));</span>
+<span class="nc" id="L282">			myTurn = true;</span>
+		}
+<span class="nc" id="L284">	}</span>
+
+	/**
+	 * @param token Sets token at position on game board based on info from server
+	 * @throws IOException
+	 */
+	public void setMove(char token) throws IOException
+	{	
+<span class="nc" id="L292">		row = fromServer.readInt();</span>
+<span class="nc" id="L293">		col = fromServer.readInt();</span>
+<span class="nc" id="L294">		Platform.runLater(() -&gt; cell[row][col].setToken(token));</span>
+<span class="nc" id="L295">	}</span>
+
+	
+	/**
+	 * @author Amy
+	 * Thread that starts a versus player game
+	 */
+	class clientHandlingPlayer implements Runnable {
+	
+		private DataInputStream in;
+		private DataOutputStream out;	
+	
+<span class="nc" id="L307">		public clientHandlingPlayer(DataInputStream in, DataOutputStream out)</span>
+<span class="nc" id="L308">		{</span>
+<span class="nc" id="L309">			this.in = in;</span>
+<span class="nc" id="L310">			this.out = out;</span>
+<span class="nc" id="L311">		}</span>
+	
+		public void run()
+		{
+			try {
+	
+<span class="nc" id="L317">				player = in.readInt();</span>
+	
+	
+<span class="nc bnc" id="L320" title="All 2 branches missed.">				if (player == PLAYER1)</span>
+				{
+<span class="nc" id="L322">					currentToken = 'X';</span>
+<span class="nc" id="L323">					otherToken = 'O';</span>
+<span class="nc" id="L324">					Platform.runLater(() -&gt; { lblTitle.setText(&quot;Player 1 - Token: X&quot;);</span>
+<span class="nc" id="L325">					lblStatus.setText(&quot;Waiting for player 2 to join.&quot;);</span>
+<span class="nc" id="L326">					});</span>
+	
+<span class="nc" id="L328">					myTurn = true;</span>
+<span class="nc" id="L329">					in.readInt(); </span>
+<span class="nc" id="L330">					Platform.runLater(() -&gt;  lblStatus.setText(&quot;Player 2 has joined.  Your turn.&quot;));</span>
+<span class="nc" id="L331">				}</span>
+	
+<span class="nc bnc" id="L333" title="All 2 branches missed.">				else if (player == PLAYER2)</span>
+				{
+<span class="nc" id="L335">					currentToken = 'O';</span>
+<span class="nc" id="L336">					otherToken = 'X';</span>
+<span class="nc" id="L337">					Platform.runLater(() -&gt; { </span>
+<span class="nc" id="L338">						lblTitle.setText(&quot;Player 2 - Token: O&quot;);</span>
+<span class="nc" id="L339">						lblStatus.setText(&quot;Waiting for player 1 to move.&quot;);</span>
+<span class="nc" id="L340">					});</span>
+	
+				}
+	
+	
+<span class="nc bnc" id="L345" title="All 2 branches missed.">				while (continueToPlay)</span>
+				{
+<span class="nc bnc" id="L347" title="All 2 branches missed.">					if (player == PLAYER1) {</span>
+	
+<span class="nc bnc" id="L349" title="All 2 branches missed.">						if (myTurn)</span>
+						{
+<span class="nc" id="L351">							Platform.runLater( () -&gt; new newPlayWindow(currentToken, out).show());</span>
+						}
+<span class="nc" id="L353">						receiveInfoFromServer();</span>
+<span class="nc" id="L354">					}</span>
+	
+<span class="nc bnc" id="L356" title="All 2 branches missed.">					else if (player == PLAYER2)</span>
+					{
+<span class="nc bnc" id="L358" title="All 2 branches missed.">						if (myTurn) </span>
+						{
+<span class="nc" id="L360">							Platform.runLater( () -&gt; new newPlayWindow(currentToken, out).show());</span>
+						}
+<span class="nc" id="L362">						receiveInfoFromServer();</span>
+					}
+				}
+	
+<span class="nc" id="L366">			} catch (IOException ex)</span>
+			{
+<span class="nc" id="L368">				ex.printStackTrace();</span>
+			} 
+<span class="nc" id="L370">		}</span>
+	
+	
+	}
+
+	
+	/**
+	 * @author Amy
+	 * Thread that starts a versus computer game
+	 *
+	 */
+	class clientHandlingComputer implements Runnable 
+	{
+		private DataInputStream in;
+		private DataOutputStream out;
+	
+<span class="nc" id="L386">		public clientHandlingComputer(DataInputStream in, DataOutputStream out)</span>
+<span class="nc" id="L387">		{</span>
+<span class="nc" id="L388">			this.in = in;</span>
+<span class="nc" id="L389">			this.out = out;</span>
+<span class="nc" id="L390">		}</span>
+	
+		public void run()
+		{
+			try {
+<span class="nc" id="L395">				player = in.readInt();</span>
+	
+<span class="nc" id="L397">				currentToken = 'X';</span>
+<span class="nc" id="L398">				otherToken = 'O';</span>
+<span class="nc" id="L399">				myTurn = true;</span>
+<span class="nc" id="L400">				Platform.runLater(() -&gt;</span>
+				{ 
+<span class="nc" id="L402">					lblTitle.setText(&quot;Player 1 - Token: X&quot;);</span>
+<span class="nc" id="L403">					lblStatus.setText(&quot;My turn.&quot;);</span>
+<span class="nc" id="L404">				});</span>
+	
+	
+<span class="nc bnc" id="L407" title="All 2 branches missed.">				while (continueToPlay)</span>
+				{
+<span class="nc bnc" id="L409" title="All 2 branches missed.">					if (player == PLAYER1)</span>
+					{
+<span class="nc bnc" id="L411" title="All 2 branches missed.">						if(myTurn)</span>
+						{
+<span class="nc" id="L413">							Platform.runLater( () -&gt; new newPlayWindow(currentToken, out).show());</span>
+						}
+<span class="nc" id="L415">						receiveInfoFromServerC();</span>
+<span class="nc" id="L416">					}</span>
+					
+<span class="nc bnc" id="L418" title="All 2 branches missed.">					else if (player == PLAYER2)</span>
+					{
+<span class="nc bnc" id="L420" title="All 2 branches missed.">						if(myTurn)</span>
+						{
+<span class="nc" id="L422">							Platform.runLater( () -&gt; new newPlayWindow(currentToken, out).show());</span>
+						}
+
+<span class="nc" id="L425">						receiveInfoFromServerC();</span>
+					}
+				}
+				
+<span class="nc" id="L429">			} catch (IOException ex)</span>
+			{
+<span class="nc" id="L431">				ex.printStackTrace();</span>
+			}
+<span class="nc" id="L433">		}</span>
+	}
+
+	private class exitOnCloseWindow
+	{
+	
+		private Stage q;
+		private VBox pane;
+		private Scene bScene;
+		Label msg;
+		Button closeButton;
+	
+<span class="nc" id="L445">		protected exitOnCloseWindow(String label)</span>
+<span class="nc" id="L446">		{</span>
+<span class="nc" id="L447">			q = new Stage();</span>
+<span class="nc" id="L448">			pane = new VBox();</span>
+<span class="nc" id="L449">			bScene = new Scene(pane);</span>
+<span class="nc" id="L450">			msg  = new Label(label);</span>
+<span class="nc" id="L451">			closeButton = new Button(&quot;Close&quot;);</span>
+<span class="nc" id="L452">			closeButton.setOnAction(e -&gt; q.close());</span>
+<span class="nc" id="L453">			q.setScene(bScene);</span>
+<span class="nc" id="L454">			pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L455">			pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L456">			pane.setSpacing(10);</span>
+<span class="nc" id="L457">			pane.getChildren().addAll(msg, closeButton);</span>
+<span class="nc" id="L458">			q.setScene(bScene);</span>
+<span class="nc" id="L459">		}</span>
+		public void show()
+		{
+<span class="nc" id="L462">			q.show();</span>
+<span class="nc" id="L463">		}</span>
+		public void close()
+		{
+<span class="nc" id="L466">			q.close();</span>
+<span class="nc" id="L467">		}</span>
+	}
+
+	public class newPlayWindow
+	{
+		private GridPane gPane;
+		private Scene aScene;
+		private Stage aStage;
+		private TextField userInputField;
+		private Label gameLabel;
+		private Label playerTurn;
+		private char currentToken;
+		private int userIntput;
+		DataOutputStream out;
+	
+<span class="nc" id="L482">		public newPlayWindow(char currentToken, DataOutputStream out) {</span>
+	
+<span class="nc" id="L484">			aStage = new Stage();</span>
+<span class="nc" id="L485">			this.out = out;</span>
+<span class="nc" id="L486">			gPane = new GridPane();</span>
+<span class="nc" id="L487">			gPane.setAlignment(Pos.CENTER.CENTER_LEFT);</span>
+<span class="nc" id="L488">			gPane.setPadding(new Insets(15, 15, 15, 15));</span>
+<span class="nc" id="L489">			gPane.setVgap(5.5);</span>
+<span class="nc" id="L490">			gPane.setHgap(20);</span>
+<span class="nc" id="L491">			aScene = new Scene(gPane);</span>
+<span class="nc" id="L492">			userInputField = new TextField();</span>
+<span class="nc" id="L493">			playerTurn = new Label(&quot;Player &quot; + currentToken + &quot;, please use a column between 1-7: &quot;);</span>
+<span class="nc" id="L494">			gameLabel = new Label(&quot;Your turn!\n &quot;);</span>
+<span class="nc" id="L495">			this.currentToken = currentToken;</span>
+<span class="nc" id="L496">			userInputField.setOnAction(e -&gt; fieldHandler(aStage, userInputField));</span>
+	
+<span class="nc" id="L498">			gPane.add(gameLabel, 0, 0);</span>
+<span class="nc" id="L499">			gPane.add(playerTurn, 0, 1);</span>
+<span class="nc" id="L500">			gPane.add(userInputField, 0, 2);</span>
+<span class="nc" id="L501">			aStage.setScene(aScene);</span>
+<span class="nc" id="L502">		}</span>
+	
+		public void show()
+		{
+<span class="nc" id="L506">			aStage.show();</span>
+<span class="nc" id="L507">		}</span>
+	
+		private void fieldHandler(Stage s, TextField field) 
+		{
+			
+			try {
+	
+<span class="nc" id="L514">				userIntput = Integer.parseInt(field.getText());</span>
+	
+<span class="nc bnc" id="L516" title="All 4 branches missed.">				if (userIntput &gt; 7 || userIntput &lt; 1)</span>
+				{
+<span class="nc" id="L518">					throw new ArrayIndexOutOfBoundsException(&quot;Invalid column number.&quot;);</span>
+				}
+<span class="nc" id="L520">				out.writeInt(userIntput);</span>
+<span class="nc" id="L521">				s.close();</span>
+<span class="nc" id="L522">				myTurn = false;</span>
+	
+				
+	
+<span class="nc" id="L526">			} catch(NumberFormatException a)</span>
+			{
+<span class="nc" id="L528">				Stage error = new Stage();</span>
+<span class="nc" id="L529">				VBox pane = new VBox();</span>
+<span class="nc" id="L530">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L531">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L532">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L533">				pane.setSpacing(10);</span>
+<span class="nc" id="L534">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L535">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L536">				Label errmsg = new Label(&quot;Not a valid number.  Try again..&quot;);</span>
+<span class="nc" id="L537">				pane.getChildren().addAll(errmsg, okButton);</span>
+	
+<span class="nc" id="L539">				error.setScene(nScene);</span>
+<span class="nc" id="L540">				error.show();</span>
+			}
+	
+<span class="nc" id="L543">			catch (ArrayIndexOutOfBoundsException a)</span>
+			{
+<span class="nc" id="L545">				Stage error = new Stage();</span>
+<span class="nc" id="L546">				VBox pane = new VBox();</span>
+<span class="nc" id="L547">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L548">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L549">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L550">				pane.setSpacing(10);</span>
+<span class="nc" id="L551">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L552">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L553">				Label errmsg = new Label(&quot;Column number out of range.  Try again..&quot;);</span>
+<span class="nc" id="L554">				pane.getChildren().addAll(errmsg, okButton);</span>
+	
+<span class="nc" id="L556">				error.setScene(nScene);</span>
+<span class="nc" id="L557">				error.show();</span>
+			}
+<span class="nc" id="L559">			catch (IOException ex)</span>
+			{
+<span class="nc" id="L561">				ex.printStackTrace();</span>
+			}
+<span class="nc" id="L563">		}</span>
+	
+		public int getUserCol()
+		{
+<span class="nc" id="L567">			return userIntput;</span>
+		}
+	
+	}
+
+	public class exitAppWindow
+	{
+	
+		private Stage q;
+		private VBox pane;
+		private Scene bScene;
+		Label msg;
+		Button closeButton;
+	
+<span class="nc" id="L581">		public exitAppWindow(String label)</span>
+<span class="nc" id="L582">		{</span>
+<span class="nc" id="L583">			q = new Stage();</span>
+<span class="nc" id="L584">			pane = new VBox();</span>
+<span class="nc" id="L585">			bScene = new Scene(pane);</span>
+<span class="nc" id="L586">			msg  = new Label(label);</span>
+<span class="nc" id="L587">			closeButton = new Button(&quot;Close&quot;);</span>
+<span class="nc" id="L588">			closeButton.setOnAction(e -&gt; System.exit(0));</span>
+<span class="nc" id="L589">			q.setScene(bScene);</span>
+<span class="nc" id="L590">			pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L591">			pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L592">			pane.setSpacing(10);</span>
+<span class="nc" id="L593">			pane.getChildren().addAll(msg, closeButton);</span>
+<span class="nc" id="L594">			q.setScene(bScene);</span>
+<span class="nc" id="L595">		}</span>
+	
+		public void show()
+		{
+<span class="nc" id="L599">			q.show();</span>
+<span class="nc" id="L600">		}</span>
+		public void close()
+		{
+<span class="nc" id="L603">			q.close();</span>
+<span class="nc" id="L604">		}</span>
+	}
+
+	public class Cell extends Pane
+	{
+		// Token used for this cell
+<span class="nc" id="L610">		private char token = ' ';</span>
+	
+<span class="nc" id="L612">		public Cell()</span>
+<span class="nc" id="L613">		{</span>
+<span class="nc" id="L614">			setStyle(&quot;-fx-border-color: black&quot;);</span>
+<span class="nc" id="L615">			this.setPrefSize(2000, 2000);</span>
+<span class="nc" id="L616">		}</span>
+	
+		//Return token
+		public char getToken() {
+<span class="nc" id="L620">			return token;</span>
+		}
+	
+		// Set a new token
+		public void setToken(char c)
+		{
+<span class="nc" id="L626">			token = c;</span>
+	
+<span class="nc bnc" id="L628" title="All 2 branches missed.">			if (token == 'X')</span>
+			{
+<span class="nc" id="L630">				Line line1 = new Line(10, 10, this.getWidth() - 10, this.getHeight() - 10);</span>
+<span class="nc" id="L631">				line1.endXProperty().bind(this.widthProperty().subtract(10));</span>
+<span class="nc" id="L632">				line1.endYProperty().bind(this.heightProperty().subtract(10));</span>
+<span class="nc" id="L633">				Line line2 = new Line(10, this.getHeight() - 10, this.getWidth() - 10, 10);</span>
+<span class="nc" id="L634">				line2.startYProperty().bind(this.heightProperty().subtract(10));</span>
+<span class="nc" id="L635">				line2.endXProperty().bind(this.widthProperty().subtract(10));</span>
+	
+				// Add the lines to the pane
+<span class="nc" id="L638">				this.getChildren().addAll(line1, line2);</span>
+<span class="nc" id="L639">			}</span>
+<span class="nc bnc" id="L640" title="All 2 branches missed.">			else if (token == 'O') {</span>
+<span class="nc" id="L641">				Ellipse ellipse = new Ellipse(this.getWidth() / 2,</span>
+<span class="nc" id="L642">						this.getHeight() / 2, this.getWidth() / 2 - 10,</span>
+<span class="nc" id="L643">						this.getHeight() / 2 - 10);</span>
+<span class="nc" id="L644">				ellipse.centerXProperty().bind(this.widthProperty().divide(2));</span>
+<span class="nc" id="L645">				ellipse.centerYProperty().bind(this.heightProperty().divide(2));</span>
+<span class="nc" id="L646">				ellipse.radiusXProperty().bind(this.widthProperty().divide(2).subtract(10));</span>
+<span class="nc" id="L647">				ellipse.radiusYProperty().bind(this.heightProperty().divide(2).subtract(10));</span>
+<span class="nc" id="L648">				ellipse.setStroke(Color.BLACK);</span>
+<span class="nc" id="L649">				ellipse.setFill(Color.WHITE);</span>
+<span class="nc" id="L650">				getChildren().add(ellipse); // Add the ellipse to the pane</span>
+			}
+	
+<span class="nc" id="L653">		}</span>
+	}
+
+	public static void main(String[] args)
+	
+	{
+<span class="nc" id="L659">		Scanner userIn = new Scanner(System.in);</span>
+	
+		String userInput;
+		/** Dummy variable to compare against for Console game */
+<span class="nc" id="L663">		String a = &quot;A&quot;;</span>
+		/** Dummy variable to compare against for GUI game */
+<span class="nc" id="L665">		String b = &quot;B&quot;;</span>
+	
+	
+<span class="nc" id="L668">		boolean validInput = false;</span>
+	
+	
+		/** Prompting user for UI preference (Via Console) */
+<span class="nc bnc" id="L672" title="All 2 branches missed.">		while (!validInput) </span>
+		{
+	
+<span class="nc" id="L675">			System.out.print(&quot;Please choose whether you'd like a Console UI ('A') or a Graphical UI('B'): &quot;);</span>
+<span class="nc" id="L676">			userInput = userIn.next();</span>
+			try	
+			{
+<span class="nc bnc" id="L679" title="All 4 branches missed.">				if (userInput.compareToIgnoreCase(a) != 0 &amp;&amp; userInput.compareToIgnoreCase(b) != 0)</span>
+				{ 
+<span class="nc" id="L681">					throw new IllegalArgumentException(&quot;Invalid game selection.&quot;);</span>
+				}
+<span class="nc" id="L683">				validInput = true;</span>
+	
+<span class="nc" id="L685">			} catch (IllegalArgumentException ex)</span>
+			{
+<span class="nc" id="L687">				System.out.println(&quot;You didn't make a valid UI selection - Please try again.&quot;);</span>
+			}
+	
+<span class="nc bnc" id="L690" title="All 2 branches missed.">			if (userInput.compareToIgnoreCase(a) == 0)</span>
+			{
+<span class="nc" id="L692">				Connect4TextConsole consoleGame = new Connect4TextConsole();</span>
+			}
+	
+<span class="nc bnc" id="L695" title="All 2 branches missed.">			if (userInput.compareToIgnoreCase(b) == 0)</span>
+			{
+	
+<span class="nc" id="L698">				launch(args);</span>
+			}
+		}
+<span class="nc" id="L701">	}</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</div></body></html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4ComputerPlayerTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4ComputerPlayerTest.java</span></div><h1>Connect4ComputerPlayerTest.java</h1><pre class="source lang-java linenums">
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import java.util.Arrays;
+import java.util.Collection;
+
+/**
+ * @author Amy Ma
+ * @version 1.0
+ * 
+ * This class servers to test the Connect4ComputerPlayer class
+ *
+ */
+<span class="fc" id="L22">public class Connect4ComputerPlayerTest {</span>
+	
+	/** Declaring static variables and test classes */
+	private static Connect4ComputerPlayer testComputer;
+	private Connect4ComputerPlayer testComputer1;
+<span class="fc" id="L27">	private static int testRuns = 10; // Number of times to generate move</span>
+	
+	/** Initializes static testComputer object */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+<span class="fc" id="L32">		testComputer = new Connect4ComputerPlayer();</span>
+<span class="fc" id="L33">	}</span>
+	
+	/** Deconstructors static testComputer object */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+<span class="fc" id="L38">		testComputer = null;</span>
+<span class="fc" id="L39">	}</span>
+	
+	/** Initializes testComputer1 object */
+	@Before
+	public void setUp() throws Exception {
+<span class="fc" id="L44">		testComputer1 = new Connect4ComputerPlayer(1, 7);</span>
+<span class="fc" id="L45">	}</span>
+	
+	/** Deconstructs testComputer1 object */
+	@After
+	public void tearDown() throws Exception {
+<span class="fc" id="L50">		testComputer1 = null;</span>
+<span class="fc" id="L51">	}</span>
+	
+	/** Tests that the generateMove method of the two testComputer objects
+	 * The first if statement tests testComputer - default constructor object
+	 * The second if statements tests testComputer1 - overloaded parameter object 
+	 * Each test will run/generate move 10x to allow for incorrect generations
+	 * */
+	@Test
+	public void testGenerateMove() {
+		
+		// Tests testComputer - Default values
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int i = 0; i &lt; testRuns; i++) {</span>
+<span class="fc" id="L63">			int x = testComputer.generateMove();</span>
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">			if (x &gt;= 1 &amp;&amp; x &lt;= 23) {</span>
+<span class="fc" id="L65">				assertTrue(true);</span>
+<span class="pc" id="L66">			} else { assertTrue(false); }</span>
+		}
+		
+		// Tests testComputer1 - Overloaded values
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int i = 0; i &lt; testRuns; i++) {</span>
+<span class="fc" id="L71">			int x = testComputer1.generateMove();</span>
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">			if (x &gt;= 1 &amp;&amp; x &lt;= 7) {</span>
+<span class="fc" id="L73">				assertTrue(true);</span>
+<span class="pc" id="L74">			} else { assertTrue(false); }</span>
+		}
+<span class="fc" id="L76">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</div></body></html>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4.java</span></div><h1>Connect4.java</h1><pre class="source lang-java linenums">
+/** This contains the logic for the Connect4 game -
+ *  This class will create the grid, input user choices 
+ *  into the grid, and confirm whether or not the last move 
+ *  made was a winning move 
+ * 
+ * @author Amy Ma
+ * @version 4.0
+ */
+
+public class Connect4   {
+	
+	/** 2D Array &quot;Grid&quot; for Connect 4 game*/
+	private char[][] grid; 
+	/** Number of rows for grid */
+	private int rows;
+	/** Number of columns for grid */
+	private int cols;
+	/** Holds value of last column that input  */
+	private int lastCol;
+	/** Holds value of last row that input  */
+	private int lastRow;
+	
+	/** This creates a new Connect 4 6x7 (By default) 
+	 *  grid and fills each space with space ' ' **/
+	
+<span class="fc" id="L27">	public Connect4() </span>
+	{
+<span class="fc" id="L29">		rows = 6;</span>
+<span class="fc" id="L30">		cols = 7;</span>
+<span class="fc" id="L31">		lastCol = -1;</span>
+<span class="fc" id="L32">		lastRow = -1;</span>
+		
+<span class="fc" id="L34">		grid = new char[rows][cols];</span>
+		
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int col = 0; col &lt; cols; col++)</span>
+		{
+<span class="fc bfc" id="L38" title="All 2 branches covered.">			for (int row = 0; row &lt; rows; row++)</span>
+			{
+<span class="fc" id="L40">				grid[row][col] = ' ';</span>
+			}
+		}
+<span class="fc" id="L43">	}</span>
+	
+	/** 
+	 * 
+	 * @return the row # that last received an input 
+	 * */
+<span class="fc" id="L49">	public int getLastRow() { return lastRow; }</span>
+	
+	/** 
+	 * 
+	 * @return the column # that last received an input 
+	 * */
+	
+<span class="fc" id="L56">	public int getLastCol() { return lastCol; }</span>
+	
+	/** Returns number of rows
+	 * @return rows
+	 */
+	
+<span class="fc" id="L62">	public int getRows() { return rows; }</span>
+	
+	/** Returns number of columns
+	 * @return columns
+	 */
+<span class="fc" id="L67">	public int getCols( ) { return cols; }</span>
+	
+	/** Inserts the player symbol into a column at the available row
+	 * @param colNum
+	 * @param player
+	 */
+	public void insertCol(int colNum, char player) 
+	{
+<span class="fc" id="L75">		colNum -= 1;</span>
+<span class="fc" id="L76">		int rowHolder = 5;	</span>
+		
+<span class="fc bfc" id="L78" title="All 4 branches covered.">		if (colNum &lt; 0 || colNum &gt; 6)</span>
+		{
+<span class="fc" id="L80">			throw new ArrayIndexOutOfBoundsException(&quot;Invalid column number.&quot;);</span>
+		}
+		
+		
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		while (grid[rowHolder][colNum] != ' ')</span>
+		{
+<span class="fc" id="L86">			rowHolder--;</span>
+			
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (rowHolder &lt; 0)</span>
+			{
+<span class="fc" id="L90">				throw new ArrayIndexOutOfBoundsException(&quot;Column number not available.&quot;);</span>
+			}
+		}
+		
+<span class="fc" id="L94">		grid[rowHolder][colNum] = player;</span>
+		
+<span class="fc" id="L96">		lastCol = colNum;</span>
+<span class="fc" id="L97">		lastRow = rowHolder;</span>
+<span class="fc" id="L98">	}</span>
+	
+	
+	/** 
+	 * @return string of values contained in the last input row (Horizontal string)
+	 */
+	public String horizontal()
+	{
+<span class="fc" id="L106">		String horiStr = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int x = 0; x &lt; cols; x++)</span>
+		{
+<span class="fc" id="L110">			horiStr += grid[lastRow][x];</span>
+		}
+
+<span class="fc" id="L113">		return horiStr;</span>
+	}
+	
+	/**
+	 * @return string of values contained in last input column (Vertical string)
+	 */
+	public String vertical()
+	{
+<span class="fc" id="L121">		String colString = &quot;&quot;;</span>
+		
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (int x = 0; x &lt; rows; x++)</span>
+		{
+<span class="fc" id="L125">			colString += grid[x][lastCol];</span>
+		}
+		
+<span class="fc" id="L128">		return colString;</span>
+	}
+	
+	/**
+	 * @return string of values from a diagonal line through the last input's location (row, column) 
+	 */
+	public String forwardDiag()
+	{
+<span class="fc" id="L136">		String diagString = &quot;&quot;;</span>
+		
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int x = 0; x &lt; rows; x++)</span>
+		{
+<span class="fc" id="L140">			int y = lastCol + lastRow - x;</span>
+			
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">			if (0 &lt;= y &amp;&amp; y &lt; cols)</span>
+			{
+<span class="fc" id="L144">				diagString += grid[x][y];</span>
+			}
+		}
+		
+<span class="fc" id="L148">		return diagString;</span>
+	}
+	
+	/**
+	 * @return string of values from a reverse diagonal line through the last input's location (row, column)
+	 */
+	public String backDiag()
+	{
+		
+<span class="fc" id="L157">		String backString = &quot;&quot;;</span>
+		
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int x = 0; x &lt; rows; x++)</span>
+		{
+<span class="fc" id="L161">			int y = lastCol - lastRow + x;</span>
+			
+<span class="pc bpc" id="L163" title="1 of 4 branches missed.">			if (0 &lt;= y &amp;&amp; y &lt; cols)</span>
+			{
+<span class="fc" id="L165">				backString += grid[x][y];</span>
+			}
+		}
+		
+<span class="fc" id="L169">		return backString;</span>
+	}
+	
+	/**
+	 * 
+	 * @param str
+	 * @param substr
+	 * @return whether or not a string contains a substring
+	 */
+	public static boolean contains(String str, String substr)
+	{
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		return str.indexOf(substr) &gt;= 0;</span>
+	}
+	
+	/**
+	 * @return whether or not the most recent input (row, column) was a winning move (4 matching chars in a row)
+	 */
+	public boolean winningMove()
+	{
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">		if (lastCol == -1)</span>
+		{
+<span class="nc" id="L190">			System.err.println(&quot;No move has been made yet.&quot;);</span>
+<span class="nc" id="L191">			return false;</span>
+		}
+		
+<span class="fc" id="L194">		char lastPlay = grid[lastRow][lastCol];</span>
+<span class="fc" id="L195">		String streak = String.format(&quot;%c%c%c%c&quot;, lastPlay, lastPlay, lastPlay, lastPlay);</span>
+		
+<span class="fc bfc" id="L197" title="All 8 branches covered.">		return contains(horizontal(), streak) || contains(vertical(), streak) || contains(forwardDiag(), streak) || contains(backDiag(), streak);</span>
+	}
+
+	public String toString() 
+	{
+<span class="fc" id="L202">		String gridContents = &quot;&quot;;</span>
+		
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		for (int row = 0; row &lt; rows; row++)</span>
+		{
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			for(int column = 0; column &lt; cols; column++)</span>
+			{
+<span class="fc" id="L208">				gridContents += &quot;|&quot; + grid[row][column];</span>
+			}
+			
+<span class="fc" id="L211">			gridContents += &quot;|\n&quot;;</span>
+		}
+		
+<span class="fc" id="L214">		return gridContents;</span>
+	}
+	
+    public boolean isFull()
+    {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">	 	for (int i = 0; i &lt; rows; i++)</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">	 		for (int j = 0; j &lt; cols; j++)</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">	 		    if (grid[i][j] == ' ')</span>
+<span class="fc" id="L222">	 		    	return false;</span>
+	
+<span class="fc" id="L224">	 	return true;</span>
+    }
+    
+    
+    /** for testing only - Not used during run-time**
+     * Clears the Connect4 grid (Replaces with ' ')
+     * Resets lastRow/lastCol variables
+     *  */
+    protected void clear() {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">    	for (int i = 0; i &lt; rows; i++)</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">	 		for (int j = 0; j &lt; cols; j++)</span>
+<span class="fc" id="L235">	 		    grid[i][j] = ' ';</span>
+    	
+<span class="fc" id="L237">    	lastCol = -1;</span>
+<span class="fc" id="L238">    	lastRow = -1;</span>
+<span class="fc" id="L239">    }</span>
+    
+    /** for testing only - Not used during run-time **
+     * Fills the Connect4 grid with 'X'
+     *  */
+    protected void fill(char fillChar) {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">    	for (int i = 0; i &lt; rows; i++)</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">	 		for (int j = 0; j &lt; cols; j++)</span>
+<span class="fc" id="L247">	 		    grid[i][j] = fillChar;</span>
+<span class="fc" id="L248">    }</span>
+    
+    /* for testing only - Not used during run-time **
+     * Returns contents at grid[row][col]
+     *  
+    protected char getAt(int row, int col){
+    	return grid[row][col];
+    }
+    
+    // for testing only - Not used during run-time **
+     * Returns boolean value based on whether or not game grid is empty
+     * 
+    protected boolean isEmpty() {
+    	boolean result = true;
+    	
+    	for (int x = 0; x &lt; rows; x++) {
+    		for (int y = 0; x &lt; cols; y++) {
+    			if (grid[x][y] != ' ') {
+    				result = false;
+    			}
+    		}
+    	}
+    	return result;
+    }
+    */
+    
+ 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</div></body></html>

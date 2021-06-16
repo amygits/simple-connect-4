@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4Test.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:36:30 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4Test.java</span></div><h1>Connect4Test.java</h1><pre class="source lang-java linenums">
+
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import java.util.Arrays;
+import java.util.Collection;
+
+public class Connect4Test {
+	
+	/** Declaring static variables and test class */ 
+	private static Connect4 testLogic;
+	private static char player1;
+	private static char player2;
+<span class="fc" id="L21">	</span>
+	/** Constructs variables and test class */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		testLogic = new Connect4();
+		player1 = 'X';
+		player2 = 'O';
+	}
+	
+	/** Deconstructs the objects/variables set up in the setUpBefore class */
+<span class="fc" id="L31">	@AfterClass</span>
+<span class="fc" id="L32">	public static void tearDownAfterClass() throws Exception {</span>
+<span class="fc" id="L33">		testLogic.clear();</span>
+<span class="fc" id="L34">		player1 = ' ';</span>
+		player2 = ' ';
+	}
+	
+	/** Tests the getRow and getCol methods */ 
+<span class="fc" id="L39">	@Test</span>
+<span class="fc" id="L40">	public void testGetRowNCol(){</span>
+<span class="fc" id="L41">		assertEquals(6, testLogic.getRows());</span>
+<span class="fc" id="L42">		assertEquals(7, testLogic.getCols());</span>
+	}
+	
+	/** Tests the getLastRow, getLastCol, and insertCol methods*/
+	@Test
+<span class="fc" id="L47">	public void testGetLastRowNCol(){</span>
+<span class="fc" id="L48">		</span>
+<span class="fc" id="L49">		testLogic.clear();</span>
+		
+		// Initial values - tests for correct constructor inputs 
+		assertEquals(-1, testLogic.getLastCol());
+		assertEquals(-1, testLogic.getLastRow());
+		
+<span class="fc" id="L55">		// Test Values (Within range) </span>
+		testLogic.insertCol(1, player1);
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L58">		assertEquals(0, testLogic.getLastCol());</span>
+<span class="fc" id="L59"></span>
+		testLogic.insertCol(1, player2);
+		assertEquals(4, testLogic.getLastRow());
+<span class="fc" id="L62">		assertEquals(0, testLogic.getLastCol());</span>
+<span class="fc" id="L63">		</span>
+<span class="fc" id="L64">		testLogic.insertCol(2, player1);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L66">		assertEquals(1, testLogic.getLastCol());</span>
+<span class="fc" id="L67">		</span>
+<span class="fc" id="L68">		testLogic.insertCol(3, player2);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L70">		assertEquals(2, testLogic.getLastCol());</span>
+<span class="fc" id="L71">		</span>
+<span class="fc" id="L72">		testLogic.insertCol(4, player1);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L74">		assertEquals(3, testLogic.getLastCol());</span>
+<span class="fc" id="L75">		</span>
+<span class="fc" id="L76">		testLogic.insertCol(5, player2);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L78">		assertEquals(4, testLogic.getLastCol());</span>
+<span class="fc" id="L79">		</span>
+<span class="fc" id="L80">		testLogic.insertCol(5, player1);</span>
+		assertEquals(4, testLogic.getLastRow());
+<span class="fc" id="L82">		assertEquals(4, testLogic.getLastCol());</span>
+<span class="fc" id="L83">		</span>
+<span class="fc" id="L84">		testLogic.insertCol(6, player2);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L86">		assertEquals(5, testLogic.getLastCol());</span>
+<span class="fc" id="L87">		</span>
+<span class="fc" id="L88">		testLogic.insertCol(7, player1);</span>
+		assertEquals(5, testLogic.getLastRow());
+<span class="fc" id="L90">		assertEquals(6, testLogic.getLastCol());</span>
+<span class="fc" id="L91">		</span>
+<span class="fc" id="L92">		testLogic.insertCol(1, player2);</span>
+		assertEquals(3, testLogic.getLastRow());
+<span class="fc" id="L94">		assertEquals(0, testLogic.getLastCol());</span>
+<span class="fc" id="L95">		</span>
+<span class="fc" id="L96">		// (Above range) </span>
+		try {
+<span class="fc" id="L98">			testLogic.insertCol(8, player1);</span>
+<span class="fc" id="L99">			fail(&quot;Should throw ArrayIndexOutOfBoundsExceptions&quot;);</span>
+<span class="fc" id="L100">		} catch (final ArrayIndexOutOfBoundsException e){</span>
+			assertTrue(true);
+		}
+		
+<span class="nc" id="L104">		try {</span>
+<span class="nc" id="L105">			testLogic.insertCol(480, player2);</span>
+<span class="pc" id="L106">			fail(&quot;Should throw ArrayIndexOutOfBoundsExceptions&quot;);</span>
+<span class="fc" id="L107">		} catch (final ArrayIndexOutOfBoundsException e){</span>
+			assertTrue(true);
+		}
+		
+<span class="nc" id="L111">		testLogic.insertCol(1, player1);</span>
+<span class="nc" id="L112">		testLogic.insertCol(1, player2);</span>
+<span class="pc" id="L113">		testLogic.insertCol(1, player1);</span>
+<span class="fc" id="L114">		</span>
+		try {
+			testLogic.insertCol(1, player2);
+<span class="fc" id="L117">			fail(&quot;Should throw ArrayIndexOutOfBoundsExceptions&quot;);</span>
+<span class="fc" id="L118">		} catch (final ArrayIndexOutOfBoundsException e){</span>
+<span class="fc" id="L119">			assertTrue(true);</span>
+		}
+		
+<span class="nc" id="L122">		// (Below range)</span>
+<span class="nc" id="L123">		try {</span>
+<span class="pc" id="L124">			testLogic.insertCol(-1, player1);</span>
+<span class="fc" id="L125">			fail(&quot;Should throw ArrayIndexOutOfBoundsExceptions&quot;);</span>
+		} catch (final ArrayIndexOutOfBoundsException e){
+			assertTrue(true);
+		}
+		try {
+<span class="nc" id="L130">			testLogic.insertCol(-101, player2);</span>
+<span class="nc" id="L131">			fail(&quot;Should throw ArrayIndexOutOfBoundsExceptions&quot;);</span>
+<span class="pc" id="L132">		} catch (final ArrayIndexOutOfBoundsException e){</span>
+<span class="fc" id="L133">			assertTrue(true);</span>
+		}
+		
+<span class="nc" id="L136">	}</span>
+<span class="nc" id="L137">	</span>
+<span class="pc" id="L138">	/** Tests for expected output from horizontal method*/</span>
+<span class="fc" id="L139">	@Test </span>
+	public void testHorizontal() {
+		
+<span class="fc" id="L142">		testLogic.clear();</span>
+		
+		testLogic.insertCol(2, player2);
+		assertEquals(&quot; O     &quot;, testLogic.horizontal());
+		
+		testLogic.insertCol(7, player1);
+<span class="fc" id="L148">		assertEquals(&quot; O    X&quot;, testLogic.horizontal());</span>
+		
+<span class="fc" id="L150">		testLogic.insertCol(4, player2);</span>
+<span class="fc" id="L151">		assertEquals(&quot; O O  X&quot;, testLogic.horizontal());</span>
+		
+<span class="fc" id="L153">		testLogic.insertCol(2, player1);</span>
+<span class="fc" id="L154">		assertEquals(&quot; X     &quot;, testLogic.horizontal());</span>
+		
+<span class="fc" id="L156">		testLogic.insertCol(1, player2);</span>
+<span class="fc" id="L157">		assertEquals(&quot;OO O  X&quot;, testLogic.horizontal());</span>
+		
+<span class="fc" id="L159">		testLogic.insertCol(6, player1);</span>
+<span class="fc" id="L160">		assertEquals(&quot;OO O XX&quot;, testLogic.horizontal());</span>
+	}
+<span class="fc" id="L162">	</span>
+<span class="fc" id="L163">	@Test</span>
+	public void testVertical() {
+<span class="fc" id="L165">		</span>
+<span class="fc" id="L166">		testLogic.clear();</span>
+<span class="fc" id="L167">		</span>
+		testLogic.insertCol(4, player2);
+		assertEquals(&quot;     O&quot;, testLogic.vertical());
+		
+		testLogic.insertCol(4, player1);
+		assertEquals(&quot;    XO&quot;, testLogic.vertical());
+<span class="fc" id="L173">		</span>
+		testLogic.insertCol(4, player2);
+<span class="fc" id="L175">		assertEquals(&quot;   OXO&quot;, testLogic.vertical());</span>
+<span class="fc" id="L176">		</span>
+		testLogic.insertCol(4, player1);
+<span class="fc" id="L178">		assertEquals(&quot;  XOXO&quot;, testLogic.vertical());</span>
+<span class="fc" id="L179">		</span>
+		testLogic.insertCol(4, player2);
+<span class="fc" id="L181">		assertEquals(&quot; OXOXO&quot;, testLogic.vertical());</span>
+<span class="fc" id="L182">	}</span>
+	
+<span class="fc" id="L184">	@Test</span>
+<span class="fc" id="L185">	public void testForwardDiag() {</span>
+		
+<span class="fc" id="L187">		testLogic.clear();</span>
+<span class="fc" id="L188"></span>
+<span class="fc" id="L189">		testLogic.insertCol(1, player1);</span>
+		testLogic.insertCol(2, player2);
+		testLogic.insertCol(4, player1);
+		testLogic.insertCol(3, player2);
+		testLogic.insertCol(5, player1);
+		testLogic.insertCol(1, player2);
+<span class="fc" id="L195">		testLogic.insertCol(2, player1);</span>
+		testLogic.insertCol(4, player2);
+<span class="fc" id="L197">		testLogic.insertCol(3, player1);</span>
+<span class="fc" id="L198">		testLogic.insertCol(7, player2);</span>
+<span class="fc" id="L199">		testLogic.insertCol(1, player1);</span>
+<span class="fc" id="L200">		testLogic.insertCol(5, player2);</span>
+<span class="fc" id="L201">		testLogic.insertCol(5, player1);</span>
+<span class="fc" id="L202">		testLogic.insertCol(4, player2);</span>
+<span class="fc" id="L203">		assertEquals(&quot;   OXO&quot;, testLogic.forwardDiag());</span>
+<span class="fc" id="L204">	}</span>
+<span class="fc" id="L205">	</span>
+<span class="fc" id="L206">	@Test	</span>
+<span class="fc" id="L207">	public void testBackDiag() {</span>
+<span class="fc" id="L208">		</span>
+<span class="fc" id="L209">		testLogic.clear();</span>
+<span class="fc" id="L210"></span>
+<span class="fc" id="L211">		testLogic.insertCol(1, player1);</span>
+<span class="fc" id="L212">		testLogic.insertCol(2, player2);</span>
+		testLogic.insertCol(4, player1);
+		testLogic.insertCol(3, player2);
+		testLogic.insertCol(5, player1);
+		testLogic.insertCol(1, player2);
+		testLogic.insertCol(2, player1);
+<span class="fc" id="L218">		testLogic.insertCol(4, player2);</span>
+		testLogic.insertCol(3, player1);
+<span class="fc" id="L220">		testLogic.insertCol(7, player2);</span>
+<span class="fc" id="L221">		testLogic.insertCol(1, player1);</span>
+<span class="fc" id="L222">		testLogic.insertCol(5, player2);</span>
+<span class="fc" id="L223">		testLogic.insertCol(5, player1);</span>
+<span class="fc" id="L224">		testLogic.insertCol(4, player2);</span>
+<span class="fc" id="L225">		assertEquals(&quot;   OO &quot;, testLogic.backDiag());</span>
+<span class="fc" id="L226">	}</span>
+<span class="fc" id="L227">	</span>
+<span class="fc" id="L228">	@Test</span>
+<span class="fc" id="L229">	public void testContains() {</span>
+<span class="fc" id="L230">		</span>
+<span class="fc" id="L231">		assertTrue(testLogic.contains(&quot;backpack&quot;, &quot;back&quot;));</span>
+<span class="fc" id="L232">		assertFalse(testLogic.contains(&quot;Ostrich&quot;, &quot;soy&quot;));</span>
+<span class="fc" id="L233">		assertTrue(testLogic.contains(&quot;XO OOOX&quot;, &quot;OX&quot;));</span>
+<span class="fc" id="L234">		assertFalse(testLogic.contains(&quot;XOXO &quot;,&quot;XOXO  &quot;));</span>
+<span class="fc" id="L235">	}</span>
+	
+	@Test
+	public void testWininngMove() {
+		testLogic.clear();
+		
+<span class="fc" id="L241">		testLogic.insertCol(7, player1);</span>
+<span class="fc" id="L242">		testLogic.insertCol(2, player2);</span>
+<span class="fc" id="L243">		testLogic.insertCol(6, player1);</span>
+<span class="fc" id="L244">		assertFalse(testLogic.winningMove());</span>
+<span class="fc" id="L245">		testLogic.insertCol(2, player2);</span>
+		testLogic.insertCol(5, player1);
+		testLogic.insertCol(2, player2);
+		testLogic.insertCol(4, player1); 
+		assertTrue(testLogic.winningMove());
+<span class="fc" id="L250">		testLogic.insertCol(2, player2);</span>
+		assertTrue(testLogic.winningMove());
+<span class="fc" id="L252">		testLogic.insertCol(4, player1);</span>
+<span class="fc" id="L253">		testLogic.insertCol(3, player2);</span>
+<span class="fc" id="L254">		testLogic.insertCol(5, player1);</span>
+<span class="fc" id="L255">		testLogic.insertCol(4, player2);</span>
+<span class="fc" id="L256">		testLogic.insertCol(5, player1);</span>
+<span class="fc" id="L257">		testLogic.insertCol(3, player2);</span>
+<span class="fc" id="L258">		assertFalse(testLogic.winningMove());</span>
+<span class="fc" id="L259">		testLogic.insertCol(6, player1);</span>
+<span class="fc" id="L260">		testLogic.insertCol(5, player2);</span>
+<span class="fc" id="L261">		assertTrue(testLogic.winningMove());</span>
+<span class="fc" id="L262">		testLogic.insertCol(4, player1);</span>
+<span class="fc" id="L263">		assertTrue(testLogic.winningMove());</span>
+<span class="fc" id="L264">	}</span>
+<span class="fc" id="L265">	</span>
+<span class="fc" id="L266">	@Test public void testToString() {</span>
+<span class="fc" id="L267">		testLogic.fill('X');</span>
+<span class="fc" id="L268">		</span>
+<span class="fc" id="L269">		String expected = &quot;|X|X|X|X|X|X|X|\n&quot;</span>
+<span class="fc" id="L270">				+ &quot;|X|X|X|X|X|X|X|\n&quot;</span>
+<span class="fc" id="L271">				+ &quot;|X|X|X|X|X|X|X|\n&quot;</span>
+<span class="fc" id="L272">				+ &quot;|X|X|X|X|X|X|X|\n&quot;</span>
+<span class="fc" id="L273">				+ &quot;|X|X|X|X|X|X|X|\n&quot;</span>
+<span class="fc" id="L274">				+ &quot;|X|X|X|X|X|X|X|\n&quot;;</span>
+<span class="fc" id="L275">		</span>
+		assertEquals(expected, testLogic.toString());
+	}
+
+<span class="fc" id="L279">	@Test </span>
+	public void testFull() {
+<span class="fc" id="L281">		testLogic.clear();</span>
+		assertFalse(testLogic.isFull());
+		testLogic.fill('X');
+		assertTrue(testLogic.isFull());
+	}
+	
+	
+<span class="fc" id="L288"></span>
+<span class="fc" id="L289">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:36:30 PM)</div></body></html>
