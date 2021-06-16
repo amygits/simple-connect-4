@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4ComputerPlayer.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4ComputerPlayer.java</span></div><h1>Connect4ComputerPlayer.java</h1><pre class="source lang-java linenums">import java.util.Random;
+
+/** This class will create a Connect 4 Computer Player object 
+ *  with a method that will generate a Connect 4 column 
+ *  move randomly based on the range of the columns
+ *  
+ *   @author Amy Ma
+ *   @version 4.0
+ *   
+ */
+
+public class Connect4ComputerPlayer {
+	/** Lowest point of column range */
+	private int min;
+	/** Highest point of column range */
+	private int max;
+	
+
+	/**
+	 * Default constructor with a column range of 1 - 23
+	 */
+<span class="fc" id="L22">	public Connect4ComputerPlayer()</span>
+	{
+<span class="fc" id="L24">		min = 1;</span>
+<span class="fc" id="L25">		max = 23;</span>
+<span class="fc" id="L26">	}</span>
+	
+	/**
+	 * Overloaded constructor that assigns new min/max column range
+	 * @param minX
+	 * @param maxX
+	 */
+<span class="fc" id="L33">	public Connect4ComputerPlayer(int minX, int maxX)</span>
+	{
+<span class="fc" id="L35">		min = minX;</span>
+<span class="fc" id="L36">		max = maxX;</span>
+<span class="fc" id="L37">	}</span>
+	
+	/**
+	 * @return a random generated int between the min and max range
+	 */
+	public int generateMove()
+	{
+<span class="fc" id="L44">		return new Random().nextInt(max - min + 1) + min;</span>
+	}
+	
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</div></body></html>

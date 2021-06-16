@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4ComputerPlayerTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:36:30 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4ComputerPlayerTest.java</span></div><h1>Connect4ComputerPlayerTest.java</h1><pre class="source lang-java linenums">import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import java.util.Arrays;
+import java.util.Collection;
+
+public class Connect4ComputerPlayerTest {
+	
+	private static Connect4ComputerPlayer testComputer;
+	private Connect4ComputerPlayer testComputer1;
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		testComputer = new Connect4ComputerPlayer();
+		
+<span class="fc" id="L22">	}</span>
+	
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		testComputer = null;
+<span class="fc" id="L27">	}</span>
+	
+	@Before
+	public void setUp() throws Exception {
+		testComputer1 = new Connect4ComputerPlayer(1, 7);
+<span class="fc" id="L32">	}</span>
+<span class="fc" id="L33">	</span>
+	@After
+	public void tearDown() throws Exception {
+		testComputer1 = null;
+	}
+<span class="fc" id="L38">	</span>
+<span class="fc" id="L39">	@Test</span>
+	public void testGenerateMove() {
+		
+		int x = testComputer.generateMove();
+		
+<span class="fc" id="L44">		if (x &gt;= 1 &amp;&amp; x &lt;= 23) {</span>
+<span class="fc" id="L45">			assertTrue(true);</span>
+		} else { assertTrue(false); }
+		
+		x = testComputer1.generateMove();
+		if (x &gt;= 1 &amp;&amp; x &lt;= 7) {
+<span class="fc" id="L50">			assertTrue(true);</span>
+<span class="fc" id="L51">		} else { assertTrue(false); }</span>
+		
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:36:30 PM)</div></body></html>

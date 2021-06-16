@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Connect4Gui.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</a> &gt; <a href="../../index.html" class="el_group">Connect4Server</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Connect4Gui.java</span></div><h1>Connect4Gui.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">import javafx.application.Application;</span>
+import javafx.geometry.Insets;
+import javafx.css.*;
+import javafx.geometry.Pos;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.layout.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.*;
+import javafx.scene.control.*;
+import javafx.event.*;
+import javafx.scene.shape.*;
+import javafx.scene.paint.Color;
+import java.util.*;
+import javafx.beans.*;
+
+/**
+ *  This class with create a Connect 4 GUI that will display the grid
+ *  and give users the option to play against a computer player
+ *  or alternate turns between 2 players and declare a winner
+ *  
+ *  Before that, it will ask the user (via Console) which UI they'd prefer
+ *  
+ * @author Amy Ma
+ * @version 3.0
+ *
+ *
+ */
+public class Connect4Gui extends Application
+{
+	
+	/** Store # of columns in the grid */
+	private int gridCols;
+	
+	/** Store # of rows in the grid */
+	private int gridRows;
+	
+	/** Create a Connect4 game */
+	Connect4 aGame;
+	
+	/** Creates a 2D array of cell objects */
+	private Cell[][] cell;
+	
+	/** Represents the current user turn in form of char*/
+	private char currentTurn;
+	
+	/** Constructor */
+<span class="nc" id="L48">	public Connect4Gui()</span>
+	{
+		/** Instantiates class attributes */ 
+<span class="nc" id="L51">		aGame = new Connect4();</span>
+<span class="nc" id="L52">		gridCols = aGame.getCols();</span>
+<span class="nc" id="L53">		gridRows = aGame.getRows();</span>
+<span class="nc" id="L54">		cell = new Cell[gridRows][gridCols];</span>
+<span class="nc" id="L55">	}</span>
+
+	/** 
+	 * 
+	 * Creates the Connect 4 Grid UI that opens up in a new window
+	 * @param gameStage  
+	 * */
+	public void start(Stage gameStage)
+	{
+		
+
+<span class="nc" id="L66">		GridPane pane = new GridPane();</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		for (int i = 0; i &lt; gridRows; i++)</span>
+		{
+<span class="nc bnc" id="L70" title="All 2 branches missed.">			for (int j = 0; j &lt; gridCols; j++)</span>
+			{
+<span class="nc" id="L72">				pane.add(cell[i][j] = new Cell(), j, i);</span>
+			}
+		}
+
+<span class="nc" id="L76">		BorderPane bPane = new BorderPane();</span>
+<span class="nc" id="L77">		bPane.setCenter(pane);</span>
+
+<span class="nc" id="L79">		Scene scene = new Scene(bPane, 410, 405);</span>
+<span class="nc" id="L80">		gameStage.setTitle(&quot;Connect 4&quot;); </span>
+<span class="nc" id="L81">		gameStage.setScene(scene);</span>
+<span class="nc" id="L82">		gameStage.show();</span>
+
+<span class="nc" id="L84">		Stage firstStage = new Stage();</span>
+<span class="nc" id="L85">		Text gameOptions = new Text(&quot;Choose who you're playing against:&quot;);</span>
+
+
+
+<span class="nc" id="L89">			ToggleGroup stg1Grp = new ToggleGroup();</span>
+<span class="nc" id="L90">			RadioButton option1 = new RadioButton(&quot;Player&quot;);</span>
+<span class="nc" id="L91">			option1.setToggleGroup(stg1Grp);</span>
+<span class="nc" id="L92">			option1.setUserData('P');</span>
+<span class="nc" id="L93">			option1.setSelected(true);</span>
+<span class="nc" id="L94">			RadioButton option2 = new RadioButton(&quot;Computer&quot;);</span>
+<span class="nc" id="L95">			option2.setUserData('C');</span>
+<span class="nc" id="L96">			option2.setToggleGroup(stg1Grp);</span>
+
+<span class="nc" id="L98">			Button okButton = new Button(&quot;OK&quot;);</span>
+<span class="nc" id="L99">			okButton.setOnAction(e -&gt; gameSelect(firstStage, stg1Grp, aGame));</span>
+			
+			
+
+<span class="nc" id="L103">			HBox hBox = new HBox(20);</span>
+<span class="nc" id="L104">			hBox.getChildren().add(option1);</span>
+<span class="nc" id="L105">			hBox.getChildren().add(option2);</span>
+
+<span class="nc" id="L107">			VBox vBox = new VBox(25);</span>
+<span class="nc" id="L108">			vBox.getChildren().addAll(gameOptions, hBox, okButton);</span>
+
+<span class="nc" id="L110">			Scene aScene = new Scene(vBox, 305, 125);</span>
+<span class="nc" id="L111">			firstStage.setTitle(&quot;Connect 4 Start&quot;);</span>
+<span class="nc" id="L112">			firstStage.setScene(aScene);</span>
+<span class="nc" id="L113">			firstStage.show();</span>
+			
+<span class="nc" id="L115">	}</span>
+
+	/** 
+	 * 
+	 * Button event handling function for user selecting Game Type (PVP/PC) 
+	 * @param s
+	 * @param t
+	 * @param game
+	 * */
+	
+	public void gameSelect(Stage s, ToggleGroup t, Connect4 game)
+	{
+<span class="nc" id="L127">		s.close();</span>
+<span class="nc" id="L128">		GridPane gPane = new GridPane();</span>
+<span class="nc" id="L129">		gPane.setAlignment(Pos.CENTER.CENTER_LEFT);</span>
+<span class="nc" id="L130">		gPane.setPadding(new Insets(15, 15, 15, 15));</span>
+<span class="nc" id="L131">		gPane.setVgap(5.5);</span>
+<span class="nc" id="L132">		gPane.setHgap(20);</span>
+<span class="nc" id="L133">		Scene aScene = new Scene(gPane);</span>
+<span class="nc" id="L134">		TextField userInputField = new TextField();</span>
+<span class="nc" id="L135">		Text userInput = new Text();</span>
+<span class="nc" id="L136">		boolean validInput = false;</span>
+<span class="nc" id="L137">		currentTurn = 'X';</span>
+		
+		Label gameLabel;
+<span class="nc" id="L140">		Label playerTurn = new Label();</span>
+		
+		/** Vs Player game Execution **/
+<span class="nc bnc" id="L143" title="All 2 branches missed.">		if (t.getSelectedToggle().getUserData().equals('P'))</span>
+		{
+			
+<span class="nc" id="L146">			Stage q = new Stage();</span>
+<span class="nc" id="L147">			gameLabel = new Label(&quot;PVP: &quot;);</span>
+<span class="nc" id="L148">			gPane.add(gameLabel, 0, 0);</span>
+<span class="nc" id="L149">			playerTurn.setText(&quot;Player &quot; + currentTurn + &quot;\nPlease choose a column number from 1-7:&quot;);</span>
+<span class="nc" id="L150">			gPane.add(playerTurn, 0, 1);</span>
+<span class="nc" id="L151">			gPane.add(userInputField, 0, 2);</span>
+<span class="nc" id="L152">			userInputField.setOnAction(e -&gt; fieldHandlerPVP(userInputField, game, playerTurn));</span>
+<span class="nc" id="L153">			q.setScene(aScene);</span>
+<span class="nc" id="L154">			q.show();</span>
+			
+		}
+		
+		/** Vs computer game Execution **/
+		
+<span class="nc bnc" id="L160" title="All 2 branches missed.">		if (t.getSelectedToggle().getUserData().equals('C'))</span>
+		{
+			
+<span class="nc" id="L163">			Stage q = new Stage();</span>
+<span class="nc" id="L164">			gameLabel = new Label(&quot;Vs. Computer: &quot;);</span>
+<span class="nc" id="L165">			gPane.add(gameLabel, 0, 0);</span>
+<span class="nc" id="L166">			playerTurn.setText(&quot;Player &quot; + currentTurn + &quot;\nPlease choose a column number from 1-7:&quot;);</span>
+<span class="nc" id="L167">			gPane.add(playerTurn, 0, 1);</span>
+<span class="nc" id="L168">			gPane.add(userInputField, 0, 2);</span>
+<span class="nc" id="L169">			userInputField.setOnAction(e -&gt; fieldHandlerComp(q, userInputField, game, playerTurn));</span>
+<span class="nc" id="L170">			q.setScene(aScene);</span>
+<span class="nc" id="L171">			q.show();</span>
+		}
+
+<span class="nc" id="L174">	}</span>
+		
+	/**
+	 * 
+	 * TextField event-handling function for when user is playing against the PC 
+	 * @param s
+	 * @param field
+	 * @param game
+	 * @param l
+	 */
+	public void fieldHandlerComp(Stage s, TextField field, Connect4 game, Label l)
+	{
+<span class="nc" id="L186">		Connect4ComputerPlayer player2 = new Connect4ComputerPlayer(1, 7);</span>
+		
+<span class="nc bnc" id="L188" title="All 2 branches missed.">		if (!game.isFull()) {</span>
+			try 
+			{
+
+<span class="nc" id="L192">				int userIntput = Integer.parseInt(field.getText());</span>
+
+
+<span class="nc bnc" id="L195" title="All 4 branches missed.">				if (userIntput &gt; 7 || userIntput &lt; 1)</span>
+				{
+<span class="nc" id="L197">					throw new ArrayIndexOutOfBoundsException(&quot;Invalid column number.&quot;);</span>
+				}
+
+<span class="nc" id="L200">				game.insertCol(userIntput, currentTurn);</span>
+<span class="nc" id="L201">				cell[game.getLastRow()][game.getLastCol()].setToken(currentTurn);</span>
+				
+<span class="nc" id="L203">				currentTurn = 'O';</span>
+				
+<span class="nc bnc" id="L205" title="All 2 branches missed.">				if(game.winningMove())</span>
+				{
+<span class="nc" id="L207">					Stage winner = new Stage();</span>
+<span class="nc" id="L208">					VBox pane = new VBox();</span>
+<span class="nc" id="L209">					Scene bScene = new Scene(pane);</span>
+<span class="nc" id="L210">					pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L211">					pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L212">					pane.setSpacing(10);</span>
+<span class="nc" id="L213">					Button exitButton = new Button(&quot;Exit&quot;);</span>
+<span class="nc" id="L214">					exitButton.setOnAction(e -&gt; System.exit(0));</span>
+<span class="nc" id="L215">					Label winMsg = new Label(&quot;You've won!!&quot;);</span>
+<span class="nc" id="L216">					pane.getChildren().addAll(winMsg, exitButton);</span>
+<span class="nc" id="L217">					winner.setScene(bScene);</span>
+<span class="nc" id="L218">					winner.show();</span>
+<span class="nc" id="L219">				}</span>
+				else {
+
+				/** Computer move */
+					
+<span class="nc" id="L224">				Stage computersMove = new Stage();</span>
+<span class="nc" id="L225">				VBox pane = new VBox();</span>
+<span class="nc" id="L226">				Scene bScene = new Scene(pane);</span>
+<span class="nc" id="L227">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L228">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L229">				pane.setSpacing(10);</span>
+<span class="nc" id="L230">				Button exitButton = new Button(&quot;Exit&quot;);</span>
+<span class="nc" id="L231">				exitButton.setOnAction(new EventHandler&lt;ActionEvent&gt;() { </span>
+					public void handle (ActionEvent e)
+					{
+<span class="nc" id="L234">						computersMove.close();</span>
+<span class="nc" id="L235">						int compInput = player2.generateMove();</span>
+<span class="nc" id="L236">						game.insertCol(compInput, currentTurn);</span>
+<span class="nc" id="L237">						cell[game.getLastRow()][game.getLastCol()].setToken(currentTurn);</span>
+						
+<span class="nc bnc" id="L239" title="All 2 branches missed.">						if(game.winningMove())</span>
+						{
+<span class="nc" id="L241">							Stage winner = new Stage();</span>
+<span class="nc" id="L242">							VBox pane = new VBox();</span>
+<span class="nc" id="L243">							Scene bScene = new Scene(pane);</span>
+<span class="nc" id="L244">							pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L245">							pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L246">							pane.setSpacing(10);</span>
+<span class="nc" id="L247">							Button exitButton = new Button(&quot;Exit&quot;);</span>
+<span class="nc" id="L248">							exitButton.setOnAction(f -&gt; System.exit(0));</span>
+<span class="nc" id="L249">							Label winMsg = new Label(&quot;Computer player has won&quot;);</span>
+<span class="nc" id="L250">							pane.getChildren().addAll(winMsg, exitButton);</span>
+<span class="nc" id="L251">							winner.setScene(bScene);</span>
+<span class="nc" id="L252">							winner.show();</span>
+						}
+<span class="nc" id="L254">						field.clear();</span>
+<span class="nc" id="L255">						currentTurn = 'X';</span>
+<span class="nc" id="L256">					}</span>
+				});
+<span class="nc" id="L258">				Label computerPlayMsg = new Label(&quot;Computer player has made its move.&quot;);</span>
+<span class="nc" id="L259">				pane.getChildren().addAll(computerPlayMsg, exitButton);</span>
+<span class="nc" id="L260">				computersMove.setScene(bScene);</span>
+<span class="nc" id="L261">				computersMove.show();</span>
+				}
+
+<span class="nc" id="L264">			} catch(NumberFormatException a)</span>
+			{
+<span class="nc" id="L266">				Stage error = new Stage();</span>
+<span class="nc" id="L267">				VBox pane = new VBox();</span>
+<span class="nc" id="L268">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L269">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L270">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L271">				pane.setSpacing(10);</span>
+<span class="nc" id="L272">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L273">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L274">				Label errmsg = new Label(&quot;Not a valid number.  Try again..&quot;);</span>
+<span class="nc" id="L275">				pane.getChildren().addAll(errmsg, okButton);</span>
+
+<span class="nc" id="L277">				error.setScene(nScene);</span>
+<span class="nc" id="L278">				error.show();</span>
+			}
+<span class="nc" id="L280">			catch (ArrayIndexOutOfBoundsException a)</span>
+			{
+<span class="nc" id="L282">				Stage error = new Stage();</span>
+<span class="nc" id="L283">				VBox pane = new VBox();</span>
+<span class="nc" id="L284">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L285">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L286">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L287">				pane.setSpacing(10);</span>
+<span class="nc" id="L288">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L289">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L290">				Label errmsg = new Label(&quot;Column number out of range.  Try again..&quot;);</span>
+<span class="nc" id="L291">				pane.getChildren().addAll(errmsg, okButton);</span>
+
+<span class="nc" id="L293">				error.setScene(nScene);</span>
+<span class="nc" id="L294">				error.show();</span>
+			}
+<span class="nc" id="L296">		}</span>
+		
+<span class="nc bnc" id="L298" title="All 2 branches missed.">		else if (game.isFull())</span>
+		{
+<span class="nc" id="L300">			Stage draw = new Stage();</span>
+<span class="nc" id="L301">			VBox pane = new VBox();</span>
+<span class="nc" id="L302">			Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L303">			pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L304">			pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L305">			pane.setSpacing(10);</span>
+<span class="nc" id="L306">			Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L307">			okButton.setOnAction(e -&gt; draw.close());</span>
+<span class="nc" id="L308">			Label drawMsg = new Label(&quot;It's a tie game!&quot;);</span>
+<span class="nc" id="L309">			pane.getChildren().addAll(drawMsg, okButton);</span>
+<span class="nc" id="L310">			draw.setScene(nScene);</span>
+<span class="nc" id="L311">			draw.show();</span>
+		}
+		
+<span class="nc" id="L314">	}</span>
+	
+	/*
+	 * TextField event-handling function for when user is playing against another user
+	 * @param field
+	 * @param game
+	 * @param l 
+	 */
+	public void fieldHandlerPVP(TextField field, Connect4 game, Label l)
+	{
+<span class="nc bnc" id="L324" title="All 2 branches missed.">		if (!game.isFull()) {</span>
+			try 
+			{
+
+<span class="nc" id="L328">				int userIntput = Integer.parseInt(field.getText());</span>
+
+
+<span class="nc bnc" id="L331" title="All 4 branches missed.">				if (userIntput &gt; 7 || userIntput &lt; 1)</span>
+				{
+<span class="nc" id="L333">					throw new ArrayIndexOutOfBoundsException(&quot;Invalid column number.&quot;);</span>
+				}
+
+<span class="nc" id="L336">				game.insertCol(userIntput, currentTurn);</span>
+<span class="nc" id="L337">				cell[game.getLastRow()][game.getLastCol()].setToken(currentTurn);</span>
+
+<span class="nc" id="L339">				field.clear();</span>
+
+<span class="nc bnc" id="L341" title="All 2 branches missed.">				if(currentTurn == 'X')</span>
+<span class="nc" id="L342">				{ currentTurn = 'O'; }</span>
+				else 
+<span class="nc" id="L344">				{ currentTurn = 'X'; }</span>
+
+<span class="nc" id="L346">				l.setText(&quot;Player &quot; + currentTurn + &quot;\nPlease choose a column number from 1-7:&quot;);</span>
+
+<span class="nc bnc" id="L348" title="All 2 branches missed.">				if(game.winningMove())</span>
+				{
+<span class="nc" id="L350">					Stage winner = new Stage();</span>
+<span class="nc" id="L351">					VBox pane = new VBox();</span>
+<span class="nc" id="L352">					Scene bScene = new Scene(pane);</span>
+<span class="nc" id="L353">					pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L354">					pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L355">					pane.setSpacing(10);</span>
+<span class="nc" id="L356">					Button exitButton = new Button(&quot;Exit&quot;);</span>
+<span class="nc" id="L357">					exitButton.setOnAction(e -&gt; System.exit(0));</span>
+<span class="nc" id="L358">					Label errmsg = new Label(&quot;Player &quot; + currentTurn + &quot; wins!!&quot;);</span>
+<span class="nc" id="L359">					pane.getChildren().addAll(errmsg, exitButton);</span>
+<span class="nc" id="L360">					winner.setScene(bScene);</span>
+<span class="nc" id="L361">					winner.show();</span>
+				}
+
+<span class="nc" id="L364">			} catch(NumberFormatException a)</span>
+			{
+<span class="nc" id="L366">				Stage error = new Stage();</span>
+<span class="nc" id="L367">				VBox pane = new VBox();</span>
+<span class="nc" id="L368">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L369">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L370">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L371">				pane.setSpacing(10);</span>
+<span class="nc" id="L372">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L373">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L374">				Label errmsg = new Label(&quot;Not a valid number.  Try again..&quot;);</span>
+<span class="nc" id="L375">				pane.getChildren().addAll(errmsg, okButton);</span>
+
+<span class="nc" id="L377">				error.setScene(nScene);</span>
+<span class="nc" id="L378">				error.show();</span>
+			}
+<span class="nc" id="L380">			catch (ArrayIndexOutOfBoundsException a)</span>
+			{
+<span class="nc" id="L382">				Stage error = new Stage();</span>
+<span class="nc" id="L383">				VBox pane = new VBox();</span>
+<span class="nc" id="L384">				Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L385">				pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L386">				pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L387">				pane.setSpacing(10);</span>
+<span class="nc" id="L388">				Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L389">				okButton.setOnAction(e -&gt; error.close());</span>
+<span class="nc" id="L390">				Label errmsg = new Label(&quot;Column number out of range.  Try again..&quot;);</span>
+<span class="nc" id="L391">				pane.getChildren().addAll(errmsg, okButton);</span>
+
+<span class="nc" id="L393">				error.setScene(nScene);</span>
+<span class="nc" id="L394">				error.show();</span>
+			}
+<span class="nc" id="L396">		}</span>
+		
+<span class="nc bnc" id="L398" title="All 2 branches missed.">		else if (game.isFull())</span>
+		{
+<span class="nc" id="L400">			Stage draw = new Stage();</span>
+<span class="nc" id="L401">			VBox pane = new VBox();</span>
+<span class="nc" id="L402">			Scene nScene = new Scene(pane);</span>
+<span class="nc" id="L403">			pane.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L404">			pane.setPadding(new Insets(10, 10, 10, 10));</span>
+<span class="nc" id="L405">			pane.setSpacing(10);</span>
+<span class="nc" id="L406">			Button okButton = new Button(&quot;OK.&quot;);</span>
+<span class="nc" id="L407">			okButton.setOnAction(e -&gt; draw.close());</span>
+<span class="nc" id="L408">			Label drawMsg = new Label(&quot;It's a tie game!&quot;);</span>
+<span class="nc" id="L409">			pane.getChildren().addAll(drawMsg, okButton);</span>
+<span class="nc" id="L410">			draw.setScene(nScene);</span>
+<span class="nc" id="L411">			draw.show();</span>
+		}
+		
+<span class="nc" id="L414">	}</span>
+		
+
+
+/*
+ *   An inner class for a cell
+ */
+	public class Cell extends Pane
+	{
+	    // Token used for this cell
+<span class="nc" id="L424">	    private char token = ' ';</span>
+
+<span class="nc" id="L426">	    public Cell()</span>
+<span class="nc" id="L427">	    {</span>
+<span class="nc" id="L428">	 	setStyle(&quot;-fx-border-color: black&quot;);</span>
+<span class="nc" id="L429">	 	this.setPrefSize(2000, 2000);</span>
+<span class="nc" id="L430">	    }</span>
+
+	    //Return token
+	    public char getToken() {
+<span class="nc" id="L434">	 	return token;</span>
+	    }
+
+	    // Set a new token
+	    public void setToken(char c)
+	    {
+<span class="nc" id="L440">			token = c;</span>
+
+<span class="nc bnc" id="L442" title="All 2 branches missed.">	 	if (token == 'X')</span>
+		{
+<span class="nc" id="L444">	 	    Line line1 = new Line(10, 10, this.getWidth() - 10, this.getHeight() - 10);</span>
+<span class="nc" id="L445">		    line1.endXProperty().bind(this.widthProperty().subtract(10));</span>
+<span class="nc" id="L446">	 	    line1.endYProperty().bind(this.heightProperty().subtract(10));</span>
+<span class="nc" id="L447">		    Line line2 = new Line(10, this.getHeight() - 10, this.getWidth() - 10, 10);</span>
+<span class="nc" id="L448">		    line2.startYProperty().bind(this.heightProperty().subtract(10));</span>
+<span class="nc" id="L449">	 	    line2.endXProperty().bind(this.widthProperty().subtract(10));</span>
+
+	 	    // Add the lines to the pane
+<span class="nc" id="L452">	 	    this.getChildren().addAll(line1, line2);</span>
+<span class="nc" id="L453">	 	}</span>
+<span class="nc bnc" id="L454" title="All 2 branches missed.">	 	else if (token == 'O') {</span>
+<span class="nc" id="L455">	 	    Ellipse ellipse = new Ellipse(this.getWidth() / 2,</span>
+<span class="nc" id="L456">	 	    this.getHeight() / 2, this.getWidth() / 2 - 10,</span>
+<span class="nc" id="L457">	 	    this.getHeight() / 2 - 10);</span>
+<span class="nc" id="L458">	 	    ellipse.centerXProperty().bind(this.widthProperty().divide(2));</span>
+<span class="nc" id="L459">	 	    ellipse.centerYProperty().bind(this.heightProperty().divide(2));</span>
+<span class="nc" id="L460">		    ellipse.radiusXProperty().bind(this.widthProperty().divide(2).subtract(10));</span>
+<span class="nc" id="L461">	 	    ellipse.radiusYProperty().bind(this.heightProperty().divide(2).subtract(10));</span>
+<span class="nc" id="L462">		    ellipse.setStroke(Color.BLACK);</span>
+<span class="nc" id="L463">	 	    ellipse.setFill(Color.WHITE);</span>
+<span class="nc" id="L464">		    getChildren().add(ellipse); // Add the ellipse to the pane</span>
+		}
+	  
+<span class="nc" id="L467">	}</span>
+}
+
+}
+
+	
+	
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>Connect4Server (1) (Apr 27, 2020 9:42:06 PM)</div></body></html>
